@@ -13,8 +13,9 @@ function svg_circle_text_enqueue_scripts()
 
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
   $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
+  $text_color = get_option('svg_circle_text_text_color', 'black');
 
-  wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(" . ($rotation_direction == 'normal' ? '-180deg' : '180deg') . "); } 100% { transform: rotate(" . ($rotation_direction == 'normal' ? '-360deg' : '360deg') . "); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;}");
+  wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(" . ($rotation_direction == 'normal' ? '-180deg' : '180deg') . "); } 100% { transform: rotate(" . ($rotation_direction == 'normal' ? '-360deg' : '360deg') . "); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;} .svg-container text { fill: {$text_color}; }");
 }
 
 function svg_circle_text_shortcode($atts, $content = null)
@@ -150,6 +151,11 @@ function svg_circle_text_settings_page()
       </label>
       <br>
       <label>
+        Text color:
+        <input type="color" name="text_color" value="<?php echo get_option('svg_circle_text_text_color', 'black'); ?>">
+      </label>
+      <br>
+      <label>
         Font weight:
         <select name="font_weight">
           <option value="normal" <?php echo get_option('svg_circle_text_font_weight', 'normal') == 'normal' ? 'selected' : ''; ?>>Normal</option>
@@ -217,6 +223,10 @@ function svg_circle_text_settings_page_save()
     update_option('svg_circle_text_font_weight', $_POST['font_weight']);
   }
 
+  if (isset($_POST['text_color'])) {
+    update_option('svg_circle_text_text_color', $_POST['text_color']);
+  }
+
   if (isset($_POST['reset'])) {
     svg_circle_text_settings_page_reset();
   }
@@ -231,6 +241,7 @@ function svg_circle_text_settings_page_reset()
   update_option('svg_circle_text_font_family', 'Arial');
   update_option('svg_circle_text_letter_spacing', '0');
   update_option('svg_circle_text_font_weight', 'normal');
+  update_option('svg_circle_text_text_color', 'black');
 
   // Rafraîchir la page
   wp_redirect(admin_url('admin.php?page=svg_circle_text_settings'));
