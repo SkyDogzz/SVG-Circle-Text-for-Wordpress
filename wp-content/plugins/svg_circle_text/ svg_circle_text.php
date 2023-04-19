@@ -26,6 +26,8 @@ function svg_circle_text_shortcode($atts, $content = null)
   $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
   $num_texts = get_option('svg_circle_text_num_texts', '3');
   $texts = array();
+  $logo_size = get_option('svg_circle_text_logo_size', '200');
+
 
   // Récupérer les textes courbés sur le cercle
   for ($i = 1; $i <= $num_texts; $i++) {
@@ -47,7 +49,7 @@ function svg_circle_text_shortcode($atts, $content = null)
       <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $background_opacity; ?>" d="M250,50 
             A200,200 0 1,1 250,450
             A200,200 0 1,1 250, 50 Z" />
-      <image x="150" y="150" width="200" height="200" xlink:href="<?php echo esc_attr(get_option('svg_circle_text_logo')); ?>" />
+      <image x="<?php echo 250 - $logo_size / 2; ?>" y="<?php echo 250 - $logo_size / 2; ?>" width="<?php echo $logo_size; ?>" height="<?php echo $logo_size; ?>" xlink:href="<?php echo esc_attr(get_option('svg_circle_text_logo')); ?>" />
       <?php
       // Afficher les textes courbés sur le cercle
       for ($i = 0; $i < $num_texts; $i++) {
@@ -199,6 +201,11 @@ function svg_circle_text_settings_page()
         <?php endif; ?>
       </label>
       <br>
+      <label>
+        Logo size (in pixels):
+        <input type="number" step="1" min="10" max="500" name="logo_size" value="<?php echo get_option('svg_circle_text_logo_size', '200'); ?>">
+      </label>
+      <br>
       <p><input type="submit" name="reset" value="Reset to Default Style"></p>
       <p><input type="submit" value="Save Changes"></p>
     </form>
@@ -274,6 +281,10 @@ function svg_circle_text_settings_page_save()
     } else {
       delete_option('svg_circle_text_logo');
     }
+  }
+
+  if (isset($_POST['logo_size'])) {
+    update_option('svg_circle_text_logo_size', $_POST['logo_size']);
   }
 
   if (isset($_POST['reset'])) {
