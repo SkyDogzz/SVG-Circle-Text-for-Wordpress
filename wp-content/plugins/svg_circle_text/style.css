@@ -32,3 +32,8 @@ text {
         transform: rotate(-360deg);
     }
 }
+
+.svg-container{
+    display: flex;
+    justify-content: center;
+}
