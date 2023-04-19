@@ -15,10 +15,12 @@ function svg_circle_text_enqueue_scripts()
 function svg_circle_text_shortcode($atts, $content = null)
 {
   $enable_background = get_option('svg_circle_text_enable_background', true);
+  $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
+  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
   ob_start(); ?>
   <div class="svg-container">
     <svg viewBox="0 0 500 500">
-      <path id="circle" fill="<?php echo $enable_background ? 'aliceblue' : 'transparent'; ?>" d="M250,50 
+      <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $enable_background ? $background_opacity : '0'; ?>" d="M250,50 
           A200,200 0 1,1 250,450
           A200,200 0 1,1 250,50 Z" />
       <image x="150" y="150" width="200" height="200" xlink:href="<?php echo plugin_dir_url(__FILE__) . 'LOGO.png' ?>" />
@@ -66,6 +68,8 @@ function svg_circle_text_settings_page()
 {
   // Récupérer l'état actuel de la case à cocher
   $enable_background = get_option('svg_circle_text_enable_background', true);
+  $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
+  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
 ?>
   <div class="wrap">
     <h1>SVG Circle Text Settings</h1>
@@ -73,6 +77,16 @@ function svg_circle_text_settings_page()
       <label>
         <input type="checkbox" name="enable_background" <?php echo $enable_background ? 'checked' : ''; ?>>
         Enable background
+      </label>
+      <br>
+      <label>
+        Background color:
+        <input type="color" name="background_color" value="<?php echo $background_color; ?>">
+      </label>
+      <br>
+      <label>
+        Background opacity:
+        <input type="number" step="0.1" min="0" max="1" name="background_opacity" value="<?php echo $background_opacity; ?>">
       </label>
       <p><input type="submit" value="Save Changes"></p>
     </form>
@@ -83,10 +97,17 @@ function svg_circle_text_settings_page()
 function svg_circle_text_settings_page_save()
 {
   if (isset($_POST['enable_background'])) {
-    update_option('svg_circle_text_enable_background', true);
-  } else {
-    update_option('svg_circle_text_enable_background', false);
+    update_option('svg_circle_text_enable_background', $_POST['enable_background']);
+  }
+
+  if (isset($_POST['background_color'])) {
+    update_option('svg_circle_text_background_color', $_POST['background_color']);
+  }
+
+  if (isset($_POST['background_opacity'])) {
+    update_option('svg_circle_text_background_opacity', $_POST['background_opacity']);
   }
 }
+
 add_action('admin_menu', 'svg_circle_text_add_admin_page');
 add_action('admin_init', 'svg_circle_text_settings_page_save');
