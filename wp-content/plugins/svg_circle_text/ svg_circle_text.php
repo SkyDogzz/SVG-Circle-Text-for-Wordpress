@@ -44,7 +44,7 @@ function svg_circle_text_shortcode($atts, $content = null)
   //donne moi la formule svg pour un cercle de diametre $circle_size
 
   ob_start(); ?>
-  <div class="svg-container" style="max-width:<?php echo $circle_size ?>;">
+  <div class="svg-container" style="max-width:<?php echo $circle_size ?>px;">
     <svg viewBox="0 0 500 500">
       <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $background_opacity; ?>" d="M250,50 
             A200,200 0 1,1 250,450
