@@ -10,13 +10,15 @@ function svg_circle_text_enqueue_scripts()
 {
   wp_enqueue_style('svg-circle-text-style', plugin_dir_url(__FILE__) . 'style.css');
   wp_enqueue_script('svg-circle-text-script', plugin_dir_url(__FILE__) . 'main.js');
-}
+
+  $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
+  wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(-180deg); } 100% { transform: rotate(-360deg); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite; transform-origin: center; }");}
 
 function svg_circle_text_shortcode($atts, $content = null)
 {
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
-  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
+  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');  
   ob_start(); ?>
   <div class="svg-container">
     <svg viewBox="0 0 500 500">
@@ -69,7 +71,8 @@ function svg_circle_text_settings_page()
   // Récupérer l'état actuel de la case à cocher
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
-  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
+  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');  
+  $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
 ?>
   <div class="wrap">
     <h1>SVG Circle Text Settings</h1>
@@ -87,6 +90,11 @@ function svg_circle_text_settings_page()
       <label>
         Background opacity:
         <input type="number" step="0.1" min="0" max="1" name="background_opacity" value="<?php echo $background_opacity; ?>">
+      </label>
+      <br>
+      <label>
+        Rotation speed (in seconds):
+        <input type="number" step="1" min="10" max="120" name="rotation_speed" value="<?php echo $rotation_speed; ?>">
       </label>
       <p><input type="submit" value="Save Changes"></p>
     </form>
@@ -106,6 +114,10 @@ function svg_circle_text_settings_page_save()
 
   if (isset($_POST['background_opacity'])) {
     update_option('svg_circle_text_background_opacity', $_POST['background_opacity']);
+  }
+
+  if (isset($_POST['rotation_speed'])) {
+    update_option('svg_circle_text_rotation_speed', $_POST['rotation_speed']);
   }
 }
 
