@@ -12,35 +12,41 @@ function svg_circle_text_enqueue_scripts()
   wp_enqueue_script('svg-circle-text-script', plugin_dir_url(__FILE__) . 'main.js');
 
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
-  wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(-180deg); } 100% { transform: rotate(-360deg); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite; transform-origin: center; }");}
+  wp_add_inline_style('svg-circle-text-style', ".svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;}");
+}
 
 function svg_circle_text_shortcode($atts, $content = null)
 {
+  // Récupérer l'état actuel des options
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
-  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');  
+  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
+  $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
+  $num_texts = get_option('svg_circle_text_num_texts', '3');
+  $texts = array();
+
+  // Récupérer les textes courbés sur le cercle
+  for ($i = 1; $i <= $num_texts; $i++) {
+    $texts[] = get_option('svg_circle_text_text_' . $i, 'Texte courbé sur un cercle');
+  }
+
   ob_start(); ?>
   <div class="svg-container">
     <svg viewBox="0 0 500 500">
-      <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $enable_background ? $background_opacity : '0'; ?>" d="M250,50 
-          A200,200 0 1,1 250,450
-          A200,200 0 1,1 250,50 Z" />
+      <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $background_opacity; ?>" d="M250,50 
+            A200,200 0 1,1 250,450
+            A200,200 0 1,1 250,50 Z" />
       <image x="150" y="150" width="200" height="200" xlink:href="<?php echo plugin_dir_url(__FILE__) . 'LOGO.png' ?>" />
-      <text>
-        <textPath id="textPath1" xlink:href="#circle">
-          Texte courbé sur un cercle
-        </textPath>
-      </text>
-      <text>
-        <textPath id="textPath2" xlink:href="#circle">
-          Deuxième texte courbé sur un cercle avec une longueur plus grande
-        </textPath>
-      </text>
-      <text>
-        <textPath id="textPath3" xlink:href="#circle">
-          Troisième texte courbé sur un cercle pas trop grand
-        </textPath>
-      </text>
+      <?php
+      // Afficher les textes courbés sur le cercle
+      for ($i = 0; $i < $num_texts; $i++) {
+      ?>
+        <text>
+          <textPath id="textPath<?php echo $i + 1; ?>" xlink:href="#circle">
+            <?php echo $texts[$i]; ?>
+          </textPath>
+        </text>
+      <?php } ?>
     </svg>
   </div>
 <?php
@@ -68,11 +74,12 @@ add_action('admin_menu', 'svg_circle_text_add_admin_page');
 
 function svg_circle_text_settings_page()
 {
-  // Récupérer l'état actuel de la case à cocher
+  // Récupérer l'état actuel des options
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
-  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');  
+  $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
+  $num_texts = get_option('svg_circle_text_num_texts', '3');
 ?>
   <div class="wrap">
     <h1>SVG Circle Text Settings</h1>
@@ -96,8 +103,24 @@ function svg_circle_text_settings_page()
         Rotation speed (in seconds):
         <input type="number" step="1" min="10" max="120" name="rotation_speed" value="<?php echo $rotation_speed; ?>">
       </label>
+      <br>
+      <label>
+        Number of texts:
+        <input type="number" step="1" min="1" name="num_texts" value="<?php echo $num_texts; ?>" onchange="this.form.submit();">
+      </label>
+      <br>
+      <?php
+      // Générer les champs de texte dynamiquement en fonction du nombre de textes
+      for ($i = 1; $i <= $num_texts; $i++) {
+      ?>
+        <label>Text <?php echo $i; ?>:
+          <input type="text" name="text_<?php echo $i; ?>" value="<?php echo get_option('svg_circle_text_text_' . $i, ''); ?>">
+        </label><br>
+      <?php } ?>
       <p><input type="submit" value="Save Changes"></p>
     </form>
+
+
   </div>
 <?php
 }
@@ -118,6 +141,19 @@ function svg_circle_text_settings_page_save()
 
   if (isset($_POST['rotation_speed'])) {
     update_option('svg_circle_text_rotation_speed', $_POST['rotation_speed']);
+  }
+
+  if (isset($_POST['num_texts'])) {
+    update_option('svg_circle_text_num_texts', $_POST['num_texts']);
+  }
+
+  for ($i = 1; $i <= $_POST['num_texts']; $i++) {
+    $text_option_name = 'svg_circle_text_text_' . $i;
+    if (isset($_POST['text_' . $i])) {
+      update_option($text_option_name, $_POST['text_' . $i]);
+    } else {
+      delete_option($text_option_name);
+    }
   }
 }
 
