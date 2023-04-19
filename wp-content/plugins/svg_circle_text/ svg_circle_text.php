@@ -38,13 +38,16 @@ function svg_circle_text_shortcode($atts, $content = null)
   $letter_spacing = get_option('svg_circle_text_letter_spacing', '0');
   $font_weight = get_option('svg_circle_text_font_weight', 'normal');
 
+  $circle_size = get_option('svg_circle_text_circle_size', '200');
+  //donne moi la formule svg pour un cercle de diametre $circle_size
+
   ob_start(); ?>
-  <div class="svg-container">
+  <div class="svg-container" style="max-width:<?php echo $circle_size ?>;">
     <svg viewBox="0 0 500 500">
       <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $background_opacity; ?>" d="M250,50 
             A200,200 0 1,1 250,450
-            A200,200 0 1,1 250,50 Z" />
-      <image x="150" y="150" width="200" height="200" xlink:href="<?php echo plugin_dir_url(__FILE__) . 'LOGO.png' ?>" />
+            A200,200 0 1,1 250, 50 Z" />
+      <image x="150" y="150" width="200" height="200" xlink:href="<?php echo esc_attr(get_option('svg_circle_text_logo')); ?>" />
       <?php
       // Afficher les textes courbés sur le cercle
       for ($i = 0; $i < $num_texts; $i++) {
@@ -90,10 +93,29 @@ function svg_circle_text_settings_page()
   $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
   $num_texts = get_option('svg_circle_text_num_texts', '3');
+  $circle_size = get_option('svg_circle_text_circle_size', '200');
+
+  $logo = get_option('svg_circle_text_logo');
+  if (isset($_FILES['logo'])) {
+    $uploaded_file = $_FILES['logo'];
+    if ($uploaded_file['error'] === UPLOAD_ERR_OK) {
+      $file_name = basename($uploaded_file['name']);
+      $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+      $allowed_exts = array('png', 'jpg', 'jpeg', 'gif');
+      if (in_array($file_ext, $allowed_exts)) {
+        $upload_overrides = array('test_form' => false);
+        $uploaded_file = wp_handle_upload($uploaded_file, $upload_overrides);
+        if ($uploaded_file && !isset($uploaded_file['error'])) {
+          $logo = $uploaded_file['url'];
+          update_option('svg_circle_text_logo', $logo);
+        }
+      }
+    }
+  }
 ?>
   <div class="wrap">
     <h1>SVG Circle Text Settings</h1>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
       <label>
         <input type="checkbox" name="enable_background" <?php echo $enable_background ? 'checked' : ''; ?>>
         Enable background
@@ -111,7 +133,7 @@ function svg_circle_text_settings_page()
       <br>
       <label>
         Rotation speed (in seconds):
-        <input type="number" step="1" min="10" max="120" name="rotation_speed" value="<?php echo $rotation_speed; ?>">
+        <input type="number" step="1" min="1" max="120" name="rotation_speed" value="<?php echo $rotation_speed; ?>">
       </label>
       <br>
       <label>
@@ -163,11 +185,23 @@ function svg_circle_text_settings_page()
         </select>
       </label>
       <br>
+      <label>
+        Circle size:
+        <input type="number" step="1" min="100" max="1000" name="circle_size" value="<?php echo $circle_size; ?>">
+      </label>
+      <br>
+      <label>
+        Upload logo:
+        <input type="file" name="logo" accept="image/*">
+        <?php if (get_option('svg_circle_text_logo')) : ?>
+          <br>
+          <img src="<?php echo esc_attr(get_option('svg_circle_text_logo')); ?>" alt="Logo" style="max-width: 150px; margin-top: 10px;">
+        <?php endif; ?>
+      </label>
+      <br>
       <p><input type="submit" name="reset" value="Reset to Default Style"></p>
       <p><input type="submit" value="Save Changes"></p>
     </form>
-
-
   </div>
 <?php
 }
@@ -176,6 +210,8 @@ function svg_circle_text_settings_page_save()
 {
   if (isset($_POST['enable_background'])) {
     update_option('svg_circle_text_enable_background', $_POST['enable_background']);
+  } else {
+    update_option('svg_circle_text_enable_background', false);
   }
 
   if (isset($_POST['background_color'])) {
@@ -225,6 +261,19 @@ function svg_circle_text_settings_page_save()
 
   if (isset($_POST['text_color'])) {
     update_option('svg_circle_text_text_color', $_POST['text_color']);
+  }
+
+  if (isset($_POST['circle_size'])) {
+    update_option('svg_circle_text_circle_size', $_POST['circle_size']);
+  }
+
+  if (isset($_FILES['logo'])) {
+    $logo = wp_handle_upload($_FILES['logo'], array('test_form' => false));
+    if ($logo && !isset($logo['error'])) {
+      update_option('svg_circle_text_logo', $logo['url']);
+    } else {
+      delete_option('svg_circle_text_logo');
+    }
   }
 
   if (isset($_POST['reset'])) {
