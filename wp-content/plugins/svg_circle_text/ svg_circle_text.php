@@ -13,6 +13,7 @@ function svg_circle_text_enqueue_scripts()
 
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
   $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
+
   wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(" . ($rotation_direction == 'normal' ? '-180deg' : '180deg') . "); } 100% { transform: rotate(" . ($rotation_direction == 'normal' ? '-360deg' : '360deg') . "); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;}");
 }
 
@@ -22,8 +23,6 @@ function svg_circle_text_shortcode($atts, $content = null)
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
   $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
-  $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');  
-  $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
   $num_texts = get_option('svg_circle_text_num_texts', '3');
   $texts = array();
 
@@ -31,6 +30,12 @@ function svg_circle_text_shortcode($atts, $content = null)
   for ($i = 1; $i <= $num_texts; $i++) {
     $texts[] = get_option('svg_circle_text_text_' . $i, 'Texte courbé sur un cercle');
   }
+
+  // Récupérer les autres paramètres
+  $font_char = get_option('svg_circle_text_char_size', '16');
+  $font_family = get_option('svg_circle_text_font_family', 'Arial');
+  $letter_spacing = get_option('svg_circle_text_letter_spacing', '0');
+  $font_weight = get_option('svg_circle_text_font_weight', 'normal');
 
   ob_start(); ?>
   <div class="svg-container">
@@ -43,12 +48,13 @@ function svg_circle_text_shortcode($atts, $content = null)
       // Afficher les textes courbés sur le cercle
       for ($i = 0; $i < $num_texts; $i++) {
       ?>
-        <text>
-          <textPath id="textPath<?php echo $i + 1; ?>" xlink:href="#circle">
+        <text font-size="<?php echo $font_char; ?>" font-family="<?php echo $font_family; ?>" letter-spacing="<?php echo $letter_spacing; ?>" font-weight="<?php echo $font_weight; ?>">
+          <textPath id="textPath<?php echo $i + 1; ?>" xlink:href="#circle" startOffset="<?php echo ($i * 100) / $num_texts; ?>%">
             <?php echo $texts[$i]; ?>
           </textPath>
         </text>
       <?php } ?>
+
     </svg>
   </div>
 <?php
@@ -127,7 +133,31 @@ function svg_circle_text_settings_page()
         <label>Text <?php echo $i; ?>:
           <input type="text" name="text_<?php echo $i; ?>" value="<?php echo get_option('svg_circle_text_text_' . $i, ''); ?>">
         </label><br>
-      <?php } ?>
+      <?php } ?><br>
+      <label>
+        Character size (in pixels):
+        <input type="number" step="1" min="10" max="100" name="char_size" value="<?php echo get_option('svg_circle_text_char_size', '20'); ?>">
+      </label>
+      <br>
+      <label>
+        Font family:
+        <input type="text" name="font_family" value="<?php echo get_option('svg_circle_text_font_family', 'Arial'); ?>">
+      </label>
+      <br>
+      <label>
+        Letter spacing (in pixels):
+        <input type="number" step="1" min="0" max="50" name="letter_spacing" value="<?php echo get_option('svg_circle_text_letter_spacing', '2'); ?>">
+      </label>
+      <br>
+      <label>
+        Font weight:
+        <select name="font_weight">
+          <option value="normal" <?php echo get_option('svg_circle_text_font_weight', 'normal') == 'normal' ? 'selected' : ''; ?>>Normal</option>
+          <option value="bold" <?php echo get_option('svg_circle_text_font_weight', 'normal') == 'bold' ? 'selected' : ''; ?>>Bold</option>
+        </select>
+      </label>
+      <br>
+      <p><input type="submit" name="reset" value="Reset to Default Style"></p>
       <p><input type="submit" value="Save Changes"></p>
     </form>
 
@@ -170,7 +200,39 @@ function svg_circle_text_settings_page_save()
   if (isset($_POST['rotation_direction'])) {
     update_option('svg_circle_text_rotation_direction', $_POST['rotation_direction']);
   }
+
+  if (isset($_POST['char_size'])) {
+    update_option('svg_circle_text_char_size', $_POST['char_size']);
+  }
+
+  if (isset($_POST['font_family'])) {
+    update_option('svg_circle_text_font_family', $_POST['font_family']);
+  }
+
+  if (isset($_POST['letter_spacing'])) {
+    update_option('svg_circle_text_letter_spacing', $_POST['letter_spacing']);
+  }
+
+  if (isset($_POST['font_weight'])) {
+    update_option('svg_circle_text_font_weight', $_POST['font_weight']);
+  }
+
+  if (isset($_POST['reset'])) {
+    svg_circle_text_settings_page_reset();
+  }
 }
 
 add_action('admin_menu', 'svg_circle_text_add_admin_page');
 add_action('admin_init', 'svg_circle_text_settings_page_save');
+function svg_circle_text_settings_page_reset()
+{
+  // Réinitialiser les options de style des textes à leur valeur par défaut
+  update_option('svg_circle_text_char_size', '16');
+  update_option('svg_circle_text_font_family', 'Arial');
+  update_option('svg_circle_text_letter_spacing', '0');
+  update_option('svg_circle_text_font_weight', 'normal');
+
+  // Rafraîchir la page
+  wp_redirect(admin_url('admin.php?page=svg_circle_text_settings'));
+  exit;
+}
