@@ -12,7 +12,8 @@ function svg_circle_text_enqueue_scripts()
   wp_enqueue_script('svg-circle-text-script', plugin_dir_url(__FILE__) . 'main.js');
 
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
-  wp_add_inline_style('svg-circle-text-style', ".svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;}");
+  $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
+  wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(" . ($rotation_direction == 'normal' ? '-180deg' : '180deg') . "); } 100% { transform: rotate(" . ($rotation_direction == 'normal' ? '-360deg' : '360deg') . "); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;}");
 }
 
 function svg_circle_text_shortcode($atts, $content = null)
@@ -21,7 +22,8 @@ function svg_circle_text_shortcode($atts, $content = null)
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
   $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
-  $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
+  $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');  
+  $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
   $num_texts = get_option('svg_circle_text_num_texts', '3');
   $texts = array();
 
@@ -78,6 +80,7 @@ function svg_circle_text_settings_page()
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
   $background_opacity = get_option('svg_circle_text_background_opacity', '1.0');
+  $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
   $rotation_speed = get_option('svg_circle_text_rotation_speed', '20');
   $num_texts = get_option('svg_circle_text_num_texts', '3');
 ?>
@@ -102,6 +105,14 @@ function svg_circle_text_settings_page()
       <label>
         Rotation speed (in seconds):
         <input type="number" step="1" min="10" max="120" name="rotation_speed" value="<?php echo $rotation_speed; ?>">
+      </label>
+      <br>
+      <label>
+        Rotation direction:
+        <select name="rotation_direction">
+          <option value="normal" <?php echo $rotation_direction == 'normal' ? 'selected' : ''; ?>>Normal</option>
+          <option value="reverse" <?php echo $rotation_direction == 'reverse' ? 'selected' : ''; ?>>Reverse</option>
+        </select>
       </label>
       <br>
       <label>
@@ -154,6 +165,10 @@ function svg_circle_text_settings_page_save()
     } else {
       delete_option($text_option_name);
     }
+  }
+
+  if (isset($_POST['rotation_direction'])) {
+    update_option('svg_circle_text_rotation_direction', $_POST['rotation_direction']);
   }
 }
 
