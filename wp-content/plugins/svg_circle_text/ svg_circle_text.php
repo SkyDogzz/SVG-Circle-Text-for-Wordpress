@@ -118,6 +118,8 @@ function svg_circle_text_settings_page()
   <div class="wrap">
     <h1>SVG Circle Text Settings</h1>
     <form method="post" action="" enctype="multipart/form-data">
+
+      <h2>Background</h2>
       <label>
         <input type="checkbox" name="enable_background" <?php echo $enable_background ? 'checked' : ''; ?>>
         Enable background
@@ -133,6 +135,8 @@ function svg_circle_text_settings_page()
         <input type="number" step="0.1" min="0" max="1" name="background_opacity" value="<?php echo $background_opacity; ?>">
       </label>
       <br>
+
+      <h2>Rotation</h2>
       <label>
         Rotation speed (in seconds):
         <input type="number" step="1" min="1" max="120" name="rotation_speed" value="<?php echo $rotation_speed; ?>">
@@ -146,6 +150,8 @@ function svg_circle_text_settings_page()
         </select>
       </label>
       <br>
+
+      <h2>Texts</h2>
       <label>
         Number of texts:
         <input type="number" step="1" min="1" name="num_texts" value="<?php echo $num_texts; ?>" onchange="this.form.submit();">
@@ -186,7 +192,10 @@ function svg_circle_text_settings_page()
           <option value="bold" <?php echo get_option('svg_circle_text_font_weight', 'normal') == 'bold' ? 'selected' : ''; ?>>Bold</option>
         </select>
       </label>
+      <p><input type="submit" name="reset" value="Reset to Default Style"></p>  
       <br>
+
+      <h2>Logo</h2>
       <label>
         Circle size:
         <input type="number" step="1" min="100" max="1000" name="circle_size" value="<?php echo $circle_size; ?>">
@@ -206,7 +215,6 @@ function svg_circle_text_settings_page()
         <input type="number" step="1" min="10" max="500" name="logo_size" value="<?php echo get_option('svg_circle_text_logo_size', '200'); ?>">
       </label>
       <br>
-      <p><input type="submit" name="reset" value="Reset to Default Style"></p>
       <p><input type="submit" value="Save Changes"></p>
     </form>
   </div>
