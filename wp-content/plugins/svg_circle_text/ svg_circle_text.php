@@ -278,8 +278,6 @@ function svg_circle_text_settings_page_save()
     $logo = wp_handle_upload($_FILES['logo'], array('test_form' => false));
     if ($logo && !isset($logo['error'])) {
       update_option('svg_circle_text_logo', $logo['url']);
-    } else {
-      delete_option('svg_circle_text_logo');
     }
   }
 
