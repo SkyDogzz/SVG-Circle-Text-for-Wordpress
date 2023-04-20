@@ -36,7 +36,7 @@ function svg_circle_text_shortcode($atts, $content = null)
       for ($i = 0; $i < $num_texts; $i++) {
       ?>
         <text font-size="<?php echo $font_char; ?>" font-family="<?php echo $font_family; ?>" letter-spacing="<?php echo $letter_spacing; ?>" font-weight="<?php echo $font_weight; ?>">
-          <textPath id="textPath<?php echo $i + 1; ?>" xlink:href="#circle" startOffset="<?php echo ($i * 100) / $num_texts; ?>%">
+          <textPath id="textPath<?php echo $i + 1; ?>" xlink:href="#circle">
             <?php echo $texts[$i]; ?>
           </textPath>
         </text>
