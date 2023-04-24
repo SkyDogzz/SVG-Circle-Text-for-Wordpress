@@ -26,7 +26,7 @@ function svg_circle_text_shortcode($atts, $content = null)
 
   ob_start(); ?>
   <div class="svg-container" style="max-width:<?php echo $circle_size ?>px;">
-    <svg viewBox="0 0 500 500">
+    <svg viewBox="0 0 500 500" width="800px">
       <path id="circle" fill="<?php echo $enable_background ? $background_color : 'transparent'; ?>" fill-opacity="<?php echo $background_opacity; ?>" d="M250,50 
             A200,200 0 1,1 250,450
             A200,200 0 1,1 250, 50 Z" />
