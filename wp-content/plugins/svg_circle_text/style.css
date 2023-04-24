@@ -36,4 +36,5 @@ text {
 .svg-container{
     display: flex;
     justify-content: center;
+    margin: auto;
 }
