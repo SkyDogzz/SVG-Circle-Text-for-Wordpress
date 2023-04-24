@@ -1,40 +1,40 @@
-.rounded-logo {
-    width: 500px;
-    height: 500px;
+.svg-container .rounded-logo {
+  width: 500px;
+  height: 500px;
 }
 
-img {
-    max-width: 25%;
-    max-height: 25%;
-    display: relative;
-    top: 0;
-    left: 0;
-    /*     transform: translate(50%, 50%);
+.svg-container img {
+  max-width: 25%;
+  max-height: 25%;
+  display: relative;
+  top: 0;
+  left: 0;
+  /*     transform: translate(50%, 50%);
  */
 }
 
-path,
-text {
-    animation: rotate 20s linear infinite;
-    transform-origin: center;
+.svg-container path,
+.svg-container text {
+  animation: rotate 20s linear infinite;
+  transform-origin: center;
 }
 
 @keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
 
-    50% {
-        transform: rotate(-180deg);
-    }
+  50% {
+    transform: rotate(-180deg);
+  }
 
-    100% {
-        transform: rotate(-360deg);
-    }
+  100% {
+    transform: rotate(-360deg);
+  }
 }
 
-.svg-container{
-    display: flex;
-    justify-content: center;
-    margin: auto;
+.svg-container {
+  display: flex;
+  justify-content: center;
+  margin: auto;
 }
