@@ -1,6 +1,8 @@
 <?php
 function svg_circle_text_shortcode($atts, $content = null)
 {
+  global $ip;
+
   // Récupérer l'état actuel des options
   $enable_background = get_option('svg_circle_text_enable_background', true);
   $background_color = get_option('svg_circle_text_background_color', 'aliceblue');
@@ -32,7 +34,7 @@ function svg_circle_text_shortcode($atts, $content = null)
             A200,200 0 1,1 250,450
             A200,200 0 1,1 250, 50 Z" />
 		  <a href="https://www.google.com/maps/place/One+conciergerie/@48.8780703,2.286654,17z/data=!4m16!1m9!3m8!1s0x47e66f5c8ea1a01b:0x55802d3a7b6e6663!2sOne+conciergerie!8m2!3d48.8780703!4d2.2888427!9m1!1b1!16s%2Fg%2F11n6rkz5dk!3m5!1s0x47e66f5c8ea1a01b:0x55802d3a7b6e6663!8m2!3d48.8780703!4d2.2888427!16s%2Fg%2F11n6rkz5dk" target="_blank">
-      <image x="<?php echo 250 - $logo_size / 2; ?>" y="<?php echo 250 - $logo_size / 2; ?>" width="<?php echo $logo_size; ?>" height="<?php echo $logo_size; ?>" xlink:href="<?php echo esc_attr(get_option('svg_circle_text_logo')); ?>" />
+      <image x="<?php echo 250 - $logo_size / 2; ?>" y="<?php echo 250 - $logo_size / 2; ?>" width="<?php echo $logo_size; ?>" height="<?php echo $logo_size; ?>" xlink:href="<?php echo str_replace('localhost', $ip, esc_attr(get_option('svg_circle_text_logo'))) ?>" />
 		</a>
       <?php
       // Afficher les textes courbés sur le cercle
