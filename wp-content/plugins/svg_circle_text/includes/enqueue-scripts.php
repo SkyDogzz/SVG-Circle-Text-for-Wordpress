@@ -12,7 +12,7 @@ function svg_circle_text_enqueue_scripts($ip)
     $rotation_direction = get_option('svg_circle_text_rotation_direction', 'normal');
     $text_color = get_option('svg_circle_text_text_color', 'black');
 
-    wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(" . ($rotation_direction == 'normal' ? '-180deg' : '180deg') . "); } 100% { transform: rotate(" . ($rotation_direction == 'normal' ? '-360deg' : '360deg') . "); } } .svg-container path, .svg-container text { animation: rotate {$rotation_speed}s linear infinite;} .svg-container text { fill: {$text_color}; }");
+    wp_add_inline_style('svg-circle-text-style', "@keyframes rotate { 0% { transform: rotate(0deg); } 50% { transform: rotate(" . ($rotation_direction == 'normal' ? '-180deg' : '180deg') . "); } 100% { transform: rotate(" . ($rotation_direction == 'normal' ? '-360deg' : '360deg') . "); } } .svg-container svg { animation: svg-circle-text-rotate {$rotation_speed}s linear infinite;} .svg-container image { animation: svg-circle-text-rotate {$rotation_speed}s linear infinite reverse;} .svg-container text { fill: {$text_color}; }");
 }   
 
 

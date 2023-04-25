@@ -3,23 +3,16 @@
   height: 500px;
 }
 
-.svg-container img {
-  max-width: 25%;
-  max-height: 25%;
-  display: relative;
-  top: 0;
-  left: 0;
-  /*     transform: translate(50%, 50%);
- */
+.svg-container svg{
+  animation: svg-circle-text-rotate 20s linear infinite;
 }
 
-.svg-container path,
-.svg-container text {
-  animation: rotate 20s linear infinite;
+.svg-container image{
+  animation: svg-circle-text-rotate 20s linear infinite reverse;
   transform-origin: center;
 }
 
-@keyframes rotate {
+@keyframes svg-circle-text-rotate {
   0% {
     transform: rotate(0deg);
   }
